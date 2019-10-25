@@ -1,0 +1,25 @@
+<head>
+<meta charset="UTF-8">
+<title>Конвертер чисел</title>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="js/jquery-3.4.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/script2.js"></script>
+</head>
+<body>
+	<div class='col-md-4 offset-md-4 pt-4'>
+				<form id='form' onsubmit="return false;" style="">
+					<h3 class='text-center'>Конвертер английских чисел </h3>
+					<div id='alertbox' style='min-height:60px;'></div>
+					<label for="name">Число прописью</label>
+					<input type="name" id="input" class="form-control">
+					<label for="name">Арабские цифры</label>
+					<input type="name" id="arab" disabled class="form-control">
+					<label for="name">Римские цифры</label>
+					<input type="name" id="rim" disabled class="form-control">
+					<br>
+					<button type="submit" id="save" class="btn btn-outline-primary">Преобразовать</button>
+				</form>
+	</div>
+</body>
