@@ -13,9 +13,11 @@ $(document).ready(function() {
 		$("#alertbox").empty();
 		$("#alertbox").append('<div id="alert" class="alert alert-danger alert-dismissible fade show" role="alert">'+ alert_text +'</div>');
 		$('#arab').val('');
+		$('#rim').val('');
 	}
 
 	var output='';
+	var outputRim='';
 	var trace=[];
 	var arr;
 	
@@ -23,6 +25,7 @@ $(document).ready(function() {
 	var arr1={one:1, two:2, three:3, four:4, five:5, six:6, seven:7, eight:8, nine:9,};
 	var arr10={ twenty:2, thirty:3, forty:4, fifty:5, sixty:6, seventy:7, eighty:8, ninety:9, ten:10, eleven: 11, twelve:12, thirteen:13, fourteen:14, fifteen:15, sixteen:16, seventeen:17, eighteen:18, nineteen:19, };
 	var arr2=['twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+	arrRim=[{'val':900, 'name':'DM'}, {'val':500, 'name':'D'}, {'val':400, 'name':'CD'}, {'val':100, 'name':'C'}, {'val':90, 'name':'XC'}, {'val':50, 'name':'L'}, {'val':40, 'name':'XL'}, {'val':10, 'name':'X'}, {'val':9, 'name':'IX'}, {'val':4, 'name':'IV'}, {'val':1, 'name':'I'}];
 	function errorHandler(id,i){
 		//1-unknown word; 2-wrong order; 3-repeats
 		error=true;
@@ -100,6 +103,7 @@ $(document).ready(function() {
 	}
 	$('#save').click(function() {
 		output='';
+		outputRim='';
 		trace=[];
 		error=false;
 		var hund=false
@@ -148,7 +152,18 @@ $(document).ready(function() {
 			if (error==true) break;
 		};
 
-		if (error==false) $('#arab').val(output);
+		if (error==false){
+			$('#arab').val(output);
+			while (output>0){
+				for(i=0;i<arrRim.length;i++){
+					if (output-arrRim[i]['val']>=0){
+						outputRim = outputRim + arrRim[i]['name'];
+						output=output-arrRim[i]['val'];
+					}
+				}
+			}
+			$('#rim').val(outputRim);
+		} 
 		console.log(arr.join('\n'));
 		window.setTimeout(function(){
 			$('#alert').alert('close');
