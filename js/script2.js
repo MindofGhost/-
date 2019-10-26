@@ -26,7 +26,7 @@ $(document).ready(function() {
 		if (id==1){
 			if(trace.length==0) alert ('Ожидалось единицы или десятки или сотни, получено неизвестное слово');
 			else{
-				if(trace[trace.length-1]=='hundried') alert ('Ожидалось единицы или десятки или конец, получено неизвестное слово');
+				if(trace[trace.length-1]=='hundred') alert ('Ожидалось единицы или десятки или конец, получено неизвестное слово');
 				if(trace[trace.length-1]=='ten') alert ('Ожидалось единицы или конец, получено неизвестное слово');
 				if(trace[trace.length-1]=='one') alert ('Ожидалось конец предложения, получено неизвестное слово');
 			}
@@ -35,17 +35,17 @@ $(document).ready(function() {
 		if (id==2){
 			if(trace[trace.length-2]=='ten') alert ('Ожидалось единицы или конец, получено сотни');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten') alert ('Ожидалось конец предложения, получено десятки');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundried') alert ('Ожидалось конец предложения, получено сотни');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ожидалось конец предложения, получено сотни');
 			//alert('хуйня текст неверный порядок');
 			console.log(trace);
 		}
 		if (id==3){
 			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='ten') alert ('Ожидалось единицы или конец, получено десятки');
-			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='hundried') alert ('Ожидалось единицы или конец, получено сотни');
-			if(trace[trace.length-2]=='hundried'&&trace[trace.length-1]=='hundried') alert ('Ожидалось десятки или единицы или конец, получено сотни');
+			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='hundred') alert ('Ожидалось единицы или конец, получено сотни');
+			if(trace[trace.length-2]=='hundred'&&trace[trace.length-1]=='hundred') alert ('Ожидалось десятки или единицы или конец, получено сотни');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='one') alert ('Ожидалось  конец, получено единицы');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten') alert ('Ожидалось  конец, получено десятки');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundried') alert ('Ожидалось  конец, получено сотни');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ожидалось  конец, получено сотни');
 			//alert('хуйня текст повтор');
 			console.log(trace);
 		};
@@ -72,8 +72,8 @@ $(document).ready(function() {
 			return true;
 		}
 	}
-	function hundried(string, next){
-		if (string=='hundried'){
+	function hundred(string, next){
+		if (string=='hundred'){
 			if (typeof next==="undefined"){
 				output = output + '00';
 			}			
@@ -82,7 +82,7 @@ $(document).ready(function() {
 			}
 			return true;
 		}
-		if (next=='hundried'){
+		if (next=='hundred'){
 			output = output + arr1[string];
 			return true;
 		}else return false;
@@ -98,7 +98,7 @@ $(document).ready(function() {
 		var arr = str.split(' ');
 		
 		for(i=0;i<arr.length;i++){
-			if (hundried(arr[i], arr[i+1])==false){
+			if (hundred(arr[i], arr[i+1])==false){
 				
 				if (ten(arr[i],arr[i+1])==false){
 					
@@ -123,12 +123,12 @@ $(document).ready(function() {
 				}
 				
 			}else{
-				if ($.inArray('hundried', trace)>=0){
-					trace.push('hundried');
+				if ($.inArray('hundred', trace)>=0){
+					trace.push('hundred');
 					errorHandler(3);
 				};
 				if(hund==true){
-				trace.push('hundried');
+				trace.push('hundred');
 				hund=false;
 				}
 				else {hund = true;}
