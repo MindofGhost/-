@@ -38,24 +38,24 @@ $(document).ready(function() {
 			console.log(i);
 		};
 		if (id==2){
-			if(trace[trace.length-2]=='ten') alert ('Ожидалось единицы или конец, получено сотни');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ожидалось конец предложения, получено eleven-nineteen');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&($.inArray(arr[i], arr2)>=0||arr[i]=='ten')) alert ('Ожидалось конец предложения, получено десятки');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ожидалось конец предложения, получено сотни');
+			if(trace[trace.length-2]=='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено сотни');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено eleven-nineteen');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&($.inArray(arr[i], arr2)>=0||arr[i]=='ten')) alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено десятки');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено сотни');
 			//alert('хуйня текст неверный порядок');
 			console.log(trace);
 			console.log(i);
 		}
 		if (id==3){
-			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ожидалось единицы или конец, получено eleven-nineteen');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ожидалось  конец, получено eleven-nineteen');
-			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='ten'&&($.inArray(arr[i], arr2)>=0||arr[i]=='ten')) alert ('Ожидалось единицы или конец, получено десятки');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&($.inArray(arr[i], arr2)>=0||arr[i]=='ten')) alert ('Ожидалось  конец, получено десятки');
+			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено eleven-nineteen');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось  конец, получено eleven-nineteen');
+			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='ten'&&($.inArray(arr[i], arr2)>=0||arr[i]=='ten')) alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено десятки');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&($.inArray(arr[i], arr2)>=0||arr[i]=='ten')) alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось  конец, получено десятки');
 			
-			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='hundred') alert ('Ожидалось единицы или конец, получено сотни');
-			if(trace[trace.length-2]=='hundred'&&trace[trace.length-1]=='hundred') alert ('Ожидалось десятки или единицы или конец, получено сотни');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='one') alert ('Ожидалось  конец, получено единицы');
-			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ожидалось  конец, получено сотни');
+			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено сотни');
+			if(trace[trace.length-2]=='hundred'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось десятки или единицы или конец, получено сотни');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='one') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось  конец, получено единицы');
+			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось  конец, получено сотни');
 			//alert('хуйня текст повтор');
 			console.log(trace);
 			console.log(i);
