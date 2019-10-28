@@ -20,19 +20,27 @@ $(document).ready(function() {
 		//1-unknown word; 2-wrong order; 3-repeats
 		error=true;
 		if (id==1){
-			if(trace.length==0) alert ('Ожидалось единицы или десятки или сотни, получено неизвестное слово ' + arr[i]);
+			if(trace.length==0){
+				if (arr[i]=='hundred') alert ('Ожидалось единицы перед словом, либо единицы, либо десятки. Получено ' + arr[i]);
+				else alert ('Ожидалось единицы или десятки или сотни, получено неизвестное слово ' + arr[i]);
+			} 
 			else{
 				if(trace[trace.length-1]=='hundred') alert ('Ожидалось единицы или десятки или конец, получено неизвестное слово ' + arr[i]);
 				if(trace[trace.length-1]=='ten') alert ('Ожидалось единицы или конец, получено неизвестное слово '+ arr[i]);
 				if(trace[trace.length-1]=='one'&&$.inArray('hundred', trace)>=0) alert ('Ожидалось конец предложения, получено неизвестное слово ' + arr[i]);
-				if(trace[trace.length-1]=='one'&&$.inArray('hundred', trace)==-1) alert ('Ожидалось конец предложения или слово "hundred", получено неизвестное слово ' + arr[i]);
+				if(trace[trace.length-1]=='one'&&arr10[arr[i-1]]!=undefined&&$.inArray('hundred', trace)==-1) alert ('Ожидалось конец предложения, получено неизвестное слово ' + arr[i]);
+				if(trace[trace.length-1]=='one'&&arr10[arr[i-1]]==undefined&&$.inArray('hundred', trace)==-1) alert ('Ожидалось конец предложения или слово "hundred", получено неизвестное слово ' + arr[i]);
+				//console.log($.inArray(arr[i-1], arr10));
 			}
 		};
 		if (id==2){
-			if(trace[trace.length-2]=='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено сотни');
+			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]!='one') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено сотни');
+			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='one') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец, получено сотни');
+			if (trace[trace.length-2]==undefined)alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено сотни');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено eleven-nineteen');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&($.inArray(arr[i], arr2)>=0||arr[i]=='ten')) alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено десятки');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено сотни');
+			//console.log(trace);
 		}
 		if (id==3){
 			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено eleven-nineteen');
@@ -45,13 +53,6 @@ $(document).ready(function() {
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='one') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось  конец, получено единицы');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось  конец, получено сотни');
 		};
-		if (id==4){
-			if(arr.length==1)alert ('Ожидалось указание колличества сотен');
-			else{ 
-				if(arr10[arr[i]]!=undefined) alert(arr[i]+' больше 9');
-				else alert ('Ожидалось единицы перед hundred, получено неизвестное слово ' + arr[i]);
-			}
-		}
 	}
 	function one(string){
 		if (arr1[string]==undefined){
@@ -84,13 +85,15 @@ $(document).ready(function() {
 			return true;
 		}
 		if (string=='hundred'&&arr.length==1){
-			errorHandler(4,i);
-			return true;
+			//errorHandler(4,i);
+			return false;
 		};
 		if (next=='hundred'){
 			if (arr1[string]==undefined){
-				errorHandler(4,i);
+				//errorHandler(4,i);
+				return false
 			}
+			if (arr1[arr[i-1]]!=undefined||arr10[arr[i-1]]!=undefined) return false;
 			output = output + arr1[string];
 			return true;
 		}else return false;
@@ -163,5 +166,4 @@ $(document).ready(function() {
 			$('#alert').alert('close');
 		},5000);
 	});
-	
 });
