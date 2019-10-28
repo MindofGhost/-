@@ -1,14 +1,4 @@
 $(document).ready(function() {
-	//*one ожидались сотни или конец слова
-	//11-19 и десятки
-	/*$('#input').bind("change keyup input click", function() {
-		if (this.value.match(/[,.!?;:()='"\[\]\/\-\(\)\{\}\.\^\+]/g)) {
-			this.value = this.value.replace(/[,.!?;:()='"\]\[\{\}\/\-\(\)\.\^\+]/g, '');
-		}
-		if (this.value.match(/[а-я]|\d/i)) {
-			this.value = this.value.replace(/[а-я]|\d/i, '');
-		}
-	});*/
 	function alert(alert_text){
 		$("#alertbox").empty();
 		$("#alertbox").append('<div id="alert" class="alert alert-danger alert-dismissible fade show" role="alert">'+ alert_text +'</div>');
@@ -37,17 +27,12 @@ $(document).ready(function() {
 				if(trace[trace.length-1]=='one'&&$.inArray('hundred', trace)>=0) alert ('Ожидалось конец предложения, получено неизвестное слово ' + arr[i]);
 				if(trace[trace.length-1]=='one'&&$.inArray('hundred', trace)==-1) alert ('Ожидалось конец предложения или слово "hundred", получено неизвестное слово ' + arr[i]);
 			}
-			console.log(trace);
-			console.log(i);
 		};
 		if (id==2){
 			if(trace[trace.length-2]=='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено сотни');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено eleven-nineteen');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='ten'&&($.inArray(arr[i], arr2)>=0||arr[i]=='ten')) alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено десятки');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось конец предложения, получено сотни');
-			//alert('хуйня текст неверный порядок');
-			console.log(trace);
-			console.log(i);
 		}
 		if (id==3){
 			if(trace[trace.length-2]=='ten'&&trace[trace.length-1]=='ten'&&$.inArray(arr[i], arr2)==-1&&arr[i]!='ten') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось единицы или конец, получено eleven-nineteen');
@@ -59,10 +44,14 @@ $(document).ready(function() {
 			if(trace[trace.length-2]=='hundred'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось десятки или единицы или конец, получено сотни');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='one') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось  конец, получено единицы');
 			if(trace[trace.length-2]=='one'&&trace[trace.length-1]=='hundred') alert ('Ошибка после слова "'+arr[i-1]+'"'+' Ожидалось  конец, получено сотни');
-			//alert('хуйня текст повтор');
-			console.log(trace);
-			console.log(i);
 		};
+		if (id==4){
+			if(arr.length==1)alert ('Ожидалось указание колличества сотен');
+			else{ 
+				if(arr10[arr[i]]!=undefined) alert(arr[i]+' больше 9');
+				else alert ('Ожидалось единицы перед hundred, получено неизвестное слово ' + arr[i]);
+			}
+		}
 	}
 	function one(string){
 		if (arr1[string]==undefined){
@@ -78,16 +67,14 @@ $(document).ready(function() {
 			return false;
 		}else{
 			output = output + arr10[string];
-			console.log(typeof next === "undefined");
 			if ($.inArray(string, arr2)>=0 && typeof next === "undefined"){
 				output = output + '0';
-				console.log('hi')
 			};
 			return true;
 		}
 	}
-	function hundred(string, next){
-		if (string=='hundred'){
+	function hundred(string, next, i){
+		if (string=='hundred'&&arr.length>1){
 			if (typeof next==="undefined"){
 				output = output + '00';
 			}			
@@ -96,7 +83,14 @@ $(document).ready(function() {
 			}
 			return true;
 		}
+		if (string=='hundred'&&arr.length==1){
+			errorHandler(4,i);
+			return true;
+		};
 		if (next=='hundred'){
+			if (arr1[string]==undefined){
+				errorHandler(4,i);
+			}
 			output = output + arr1[string];
 			return true;
 		}else return false;
@@ -113,7 +107,7 @@ $(document).ready(function() {
 		arr = str.split(' ');
 		
 		for(i=0;i<arr.length;i++){
-			if (hundred(arr[i], arr[i+1])==false){
+			if (hundred(arr[i], arr[i+1], i)==false){
 				
 				if (ten(arr[i],arr[i+1])==false){
 					
@@ -159,15 +153,14 @@ $(document).ready(function() {
 					if (output-arrRim[i]['val']>=0){
 						outputRim = outputRim + arrRim[i]['name'];
 						output=output-arrRim[i]['val'];
+						break;
 					}
 				}
 			}
 			$('#rim').val(outputRim);
 		} 
-		console.log(arr.join('\n'));
 		window.setTimeout(function(){
 			$('#alert').alert('close');
-			//error=false;
 		},5000);
 	});
 	
