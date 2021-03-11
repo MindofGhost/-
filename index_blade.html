@@ -1,0 +1,320 @@
+<html lang="ru">
+	<head>
+		<meta charset="UTF-8">
+		<title>27 вариант</title>
+		<link rel="stylesheet" type="text/css" href="css/admin.css">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+		<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+		<script src="https://mindofghost.github.io/test/jquery-3.5.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+		<script src="https://unpkg.com/mathjs@9.2.0/lib/browser/math.js"></script>
+		<style type="text/css">
+			a {
+				background: red;
+			}
+		</style>
+	</head>
+	<body>
+<div class="container-fluid" style="margin-top: 100px;">
+    <div class="container-fluid">
+    	<div class="card">
+    	<div class="card-body">
+    	<div class="card-title">
+    	<div class="container">
+ 		 <div class="row">
+ 		  <div class="col">
+		<textarea id="input" style="width: 400px; height: 160px"></textarea>
+		<div id="error"></div>
+		</div>
+		<div class="col">
+			<div id="output" style="width: 650px"></div>
+		</div>
+		</div>
+		<button type="button" class="btn btn-primary btn-lg" onclick="launch()">Анализ</button>
+	</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+<script type="text/javascript">
+var separate;
+var offset;
+var errorDetected;
+var stage;
+var vars;
+var firstnumber;
+var wasended;
+function launch(){
+//var separate = $('#input').val().replace(/\r?\n/g, " ").replace(/\ +/g, ' ').toLowerCase().split(" ");
+	$('#output').html('');
+	$('#error').html('');
+	separate = $('#input').val().replace(/,/g, ", ").replace(/\r?\n/g, " ").toLowerCase().split(" ");
+	stage = 0;
+	offset = 0;
+	vars = [];
+	wasended=false;
+	errorDetected=false;
+	for (let i = 0; i<separate.length; i++){
+		if (errorDetected==true) break; //заканчиваем проверку при первой ошибке
+		if (separate[i].length!=0){
+			switch(stage) {
+				case 0: //начало
+					if (separate[i]!="программа") error('Ожидалось "Программа"', offset)
+					else offset = offset + separate[i].length;
+					stage++;
+					break;
+				case 1:
+					firststage(i);
+					break;
+				case 2:
+					continuefirststage(i);
+					break;
+				case 3:
+					checkvar(i);
+					break;				
+				case 4:
+					checkequal(i, 0);
+					break;				
+				case 5:
+					checknumber(i, 0);
+					break;
+				case 6:
+					checksymbol(i, 0);
+					break;				
+				case 7:
+					checkend(i, 0);
+					break;
+			
+			}
+		}
+		if (wasended==false&&((i==separate.length-2&&separate[i+1].length==0)||(i==separate.length-1))) separate[i+1] = "&"
+		offset++;
+		if(/,/g.test(separate[i])==true) offset = offset - separate[i].match(/,/g).length
+	}
+	if (wasended&&errorDetected==false){
+		calculating();
+	}
+}
+function error(text, pos){
+	let output = $('#input').val();
+	output = output.slice(0,pos)+"<a>"+output[pos]+"</a>"+output.slice(pos+1);
+	$('#output').html(output.replace(/\r?\n/g, "<br>").replace(/ /g,"&nbsp;").replace(/undefined/g,"&nbsp;"));
+	$('#error').html(text);
+	errorDetected=true;
+}
+function firststage(i){
+	if (separate[i].startsWith('выполнить')||separate[i].startsWith('зарезервировать')){
+		let localoffset = 0; //считаем смещение отдельным счетчиком
+		localoffset = separate[i].match(/^((выполнить)|(зарезервировать))/g)[0].length;
+		if (/^((выполнить)|(зарезервировать)):/.test(separate[i])==false) error('Ожидалось ":"', offset+localoffset)
+		else{
+			if (/^((выполнить)|(зарезервировать)):[0-9]+\.[0-9]+/.test(separate[i])==false){
+				localoffset++;
+				error('Ожидалось вещественное число, например "1.1"', offset+localoffset);
+			}
+			else{
+				localoffset = separate[i].match(/^((выполнить)|(зарезервировать)):[0-7]*\.*[0-7]*/g)[0].length;
+				if (separate[i].match(/^((выполнить)|(зарезервировать)):[0-9]+\.[0-9]+/g)[0].length!=localoffset) error('Ожидалась восьмеричная система счисления', offset+localoffset)
+				else{
+					if (/^((выполнить)|(зарезервировать)):[0-7]+\.[0-7]+$/.test(separate[i])==true) stage++
+					else{
+						if (/^((выполнить)|(зарезервировать)):[0-7]+\.[0-7]+((первое)|(второе))(|,)$/.test(separate[i])==false) error('Ожидалось слово "первое" или "второе"', offset+localoffset)
+						else{
+							if (/,$/.test(separate[i])==false) stage = stage + 2;
+						}
+					}
+				}
+			}
+		}
+		offset = offset + separate[i].length
+	}
+	else error('Ожидалось "Выполнить" или "Зарезервировать"', offset);
+}
+function continuefirststage(i){
+	let localoffset = 0;
+	if (/^[0-9]+\.[0-9]+/.test(separate[i])==false){
+		error('Ожидалось вещественное число, например "1.1"', offset+localoffset);
+	}
+	else{
+		localoffset = separate[i].match(/^[0-7]*\.*[0-7]*/g)[0].length;
+		if (separate[i].match(/^[0-9]+\.[0-9]+/g)[0].length!=localoffset) error('Ожидалась восьмеричная система счисления', offset+localoffset)
+		else{
+			if (/^[0-7]+\.[0-7]+$/.test(separate[i])==false){
+				localoffset = separate[i].match(/^[0-7]+\.[0-7]+/g)[0].length;
+				if (/^[0-7]+\.[0-7]+((первое)|(второе))(|,)$/.test(separate[i])==false) error('Ожидалось слово "первое" или "второе"', offset+localoffset)
+				else{
+					if (/,$/.test(separate[i])==true) stage--
+					else stage++
+				}
+				
+			}
+			offset = offset + separate[i].length;
+		}
+	}
+}
+function checkvar(i){
+	if (/^[а-я][а-я0-7]*/.test(separate[i])==false||separate[i].startsWith('конец')||/^([а-я][а-я0-7]*)(?=[8-9])/.test(separate[i])){
+		if (separate[i].startsWith('конец')) error('Ожидалось название переменной. Встречено "конец".', offset);
+		else {
+			let localoffset = 0;
+			if (separate[i].match(/^[а-я][а-я0-7]*/g)!=null){
+				localoffset = separate[i].match(/^[а-я][а-я0-7]*/g)[0].length;
+				if (separate[i].match(/^[а-я][а-я0-9]*/g)[0].length!=localoffset) error('Ожидалась восьмеричная система счисления', offset+localoffset)
+			} 
+			if (errorDetected==false) error('Ожидалось название переменной, состоящее из букв и цифр, в котором первый символ-буква.', offset);
+		}
+	}
+	else{
+		vars.push({name: separate[i].match(/^[а-я][а-я0-7]*/g)[0], val: "", answer: ""});
+		//vars.push(separate[i].match(/^[а-я][а-я0-7]*/g)[0]);
+		stage++;
+		//console.log (vars[vars.length-1].name.length +" "+  vars[vars.length-1].name);
+		if (/^[а-я][а-я0-7]*$/.test(separate[i])==false) checkequal(i, vars[vars.length-1].name.length);
+		else offset = offset + separate[i].length;
+	}
+}
+function checkequal(i, searchoffset){
+	let regexp = /=/yg;
+	regexp.lastIndex = searchoffset;
+	if (regexp.test(separate[i]) == false) error('Ожидалось "="', offset+searchoffset);
+	else {
+		stage++;
+		firstnumber = true;
+		regexp = /=$/yg;
+		regexp.lastIndex = searchoffset;
+		if (regexp.test(separate[i])== false) checknumber(i, searchoffset+1);
+		else offset = offset + searchoffset + 1;
+	}
+}
+function checknumber(i, searchoffset){
+	let regexp = /(sin|cos|abs)*[а-я][а-я0-9]*($|[\+\-\*\/\^])/yg;
+	if (firstnumber) regexp = /-?(sin|cos|abs)*[а-я][а-я0-9]*($|[\+\-\*\/\^])/yg;
+	let validvar = false
+	regexp.lastIndex = searchoffset;
+	if (regexp.test(separate[i])) {
+		regexp = /-?(sin|cos|abs)*/yg;
+		regexp.lastIndex = searchoffset;
+		let functionlength = regexp.exec(separate[i])[0].length;
+		regexp = /[а-я][а-я0-9]*/yg;
+		regexp.lastIndex = searchoffset+functionlength;
+		let varlength = regexp.exec(separate[i])[0].length;
+		if (vars.length > 1){
+			for (let d=0; d<vars.length-1; d++){ 
+				if (separate[i].startsWith(vars[d].name, searchoffset+functionlength)&&vars[d].name.length == varlength) validvar = true;
+			}
+		}
+		if (validvar==false) error('Неизвестная переменная', offset+searchoffset+functionlength);
+	}
+	else{
+		if (firstnumber) regexp = /-?(((sin|cos|abs)+[0-9]+)|[0-9]+)/yg;
+		else regexp = /((sin|cos|abs)+[0-9]+)|[0-9]+/yg;
+		regexp.lastIndex = searchoffset;
+		if (regexp.test(separate[i])==false) {
+			error('Ожидалась переменная или восьмеричное число или функция с восьмеричным числом', offset+searchoffset);
+			/*
+			if (firstnumber) regexp = /-?(sin|cos|abs)+/yg;
+			else regexp = /(sin|cos|abs)+/yg;
+			regexp.lastIndex = searchoffset;
+			if (regexp.test(separate[i])){
+				regexp.lastIndex = searchoffset;
+				error('Ожидалась число', offset+searchoffset+regexp.exec(separate[i])[0].length);
+			}
+			*/
+		}
+	}
+	if (errorDetected == false){
+		regexp = /-?((sin|cos|abs)*([а-я][а-я0-7]*|[0-7]*))|[0-7]*/yg;
+		regexp.lastIndex = searchoffset;
+		let strlength = regexp.exec(separate[i])
+		if (strlength==null) strlength = 0
+		else strlength = strlength[0].length
+		regexp = /-?((sin|cos|abs)*([а-я][а-я0-9]*|[0-9]+))|[0-9]+/yg;
+		regexp.lastIndex = searchoffset;
+		if (regexp.exec(separate[i])[0].length!=strlength) error('Ожидалась восьмеричная система счисления', offset+searchoffset+strlength)
+	}
+	if (errorDetected == false){
+		stage++;
+		regexp = /-?((sin|cos|abs)*([а-я][а-я0-7]*|[0-7]+))|[0-7]+/yg;
+		regexp.lastIndex = searchoffset;
+		let string = regexp.exec(separate[i])[0];
+		regexp = /-?((sin|cos|abs)*([а-я][а-я0-7]*|[0-7]+)$)|[0-7]+$/yg;
+		regexp.lastIndex = searchoffset;
+		vars[vars.length-1].val=vars[vars.length-1].val+string;
+		if (regexp.test(separate[i])== false) checksymbol(i, searchoffset+string.length);
+		else offset = offset + searchoffset + string.length;
+		//if (regexp.test(separate[i])== false) checknumber(i, searchoffset+1);
+		//else offset = offset + searchoffset + 1;
+	
+	}
+}
+function checksymbol(i, searchoffset){
+	//console.log("next stage!")
+	let goToCheckvar=false;
+	let regexp = /[\+\-\*\/\^]/yg;
+	regexp.lastIndex = searchoffset;
+	if (regexp.test(separate[i])) {
+		//пишем знак в массив
+		regexp = /[\+\-\*\/\^]/yg;
+		regexp.lastIndex = searchoffset;
+		vars[vars.length-1].val=vars[vars.length-1].val+regexp.exec(separate[i])[0];
+		//
+		stage--;
+		regexp = /[\+\-\*\/\^]$/yg;
+		regexp.lastIndex = searchoffset;
+		if (regexp.test(separate[i])== false) checknumber(i, searchoffset+1);
+		else offset = offset + searchoffset + 1;
+	}
+	else{
+		regexp = /^[а-я][а-я0-7]*/yg;
+		regexp.lastIndex = searchoffset;
+		if (regexp.test(separate[i])){
+			if (separate[i].startsWith('конец')==false){
+				stage = 3;
+				checkvar(i);
+			}else{
+				stage++;
+				offset=offset+5;
+				checkend(i);
+			}
+		}
+		else error('Ожидался знак или объявление переменной или "конец"', offset+searchoffset);
+	}
+}
+function checkend(i){
+	if (wasended==false && /^конец$/.test(separate[i])){
+		wasended=true;
+	}
+	else error('После слова "конец" не должно быть символов', offset);
+}
+function calculating(){
+	//alert("вычисляем");
+	for (let i=0; i<vars.length; i++){				
+		//vars[i].val=vars[i].val.replace(/(-?((sin|cos|abs)*([а-я][а-я0-7]*|[0-7]+))|[0-7]+)\^(-?((sin|cos|abs)*([а-я][а-я0-7]*|[0-7]+))|[0-7]+)/g, 'Math.pow($1,$5)');
+		if (vars[i].val.match(/sin|cos|abs/g)!= null){
+			let counter = vars[i].val.match(/sin|cos|abs/g).length
+			for (let d=0; d<counter; d++){
+				vars[i].val=vars[i].val.replace(/(sin|cos|abs)([а-я][а-я0-7]*|[0-7]+|((sin|cos|abs)\(.*\)))/g, '$1($2)');
+			}
+		}
+		if (vars[i].val.match(/[а-я][а-я0-7]*/g)!=null){
+			let tempvars = vars.filter(item => item.answer!='');
+			tempvars.reverse();
+			vars[i].val=vars[i].val.replace(/[а-я][а-я0-7]*/g, str => str=tempvars.find(item => item.name == str).answer);
+		}
+		vars[i].val=vars[i].val.replace(/(\d+\.\d+)|(\d+)/g, replacer);
+		vars[i].answer = math.evaluate(vars[i].val);
+		$('#output').append(vars[i].name+'='+vars[i].answer.toString(8)+'<br>');
+		if (/(\d+\.\d+)/.test(vars[i].answer)==false) vars[i].answer = vars[i].answer.toString(8);
+	}
+	
+}
+function replacer(match, p1, p2, offset, string) {
+	if (p1!=undefined) return p1
+	else return '0o'+p2
+}
+</script>
+</html>
